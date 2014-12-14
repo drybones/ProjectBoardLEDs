@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoardLocation.cs" />
     <Compile Include="LEDStripAnimator.cs" />
     <Compile Include="MappedProject.cs" />
+    <Compile Include="OPC.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,9 +6,25 @@ using System.Threading.Tasks;
 
 namespace ProjectBoardLEDs
 {
-    public class MappedProject : Project
+    public class MappedProject
     {
-        public int FirstLED { get; set; }
-        public int LastLED { get; set; }
+        private Project m_Project;
+        private BoardLocation m_Location;
+
+        public MappedProject(Project project, BoardLocation location)
+        {
+            m_Project = project;
+            m_Location = location;
+        }
+
+        public Project Project
+        {
+            get { return m_Project; }
+        }
+
+        public BoardLocation Location
+        {
+            get { return m_Location; }
+        }
     }
 }
