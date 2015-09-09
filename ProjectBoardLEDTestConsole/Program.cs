@@ -21,11 +21,17 @@ namespace ProjectBoardLEDTestConsole
                 var animator = new LEDStripAnimator(dummyProjectMapping, opc);
                 opc.statusLedAuto();
 
+                var lastChange = DateTime.Now.Ticks;
                 while (true)
                 {
                     animator.Animate();
                     opc.writePixels();
-                    //MaybeChangeBuildStatus(dummyProjectMapping);
+                    var now = DateTime.Now.Ticks;
+                    if (now - lastChange > 10000000*5) // 5 seconds
+                    {
+                        IncrementBuildStatus(dummyProjectMapping);
+                        lastChange = now;
+                    }
                 }
             }
             
@@ -35,8 +41,8 @@ namespace ProjectBoardLEDTestConsole
         {
             var mappedProjects = new List<MappedProject>();
 
-            var numTestProjects = 16;
-            var stripLength = 64 * 8;
+            var numTestProjects = 1;
+            var stripLength = 13;
             var projectLength = stripLength / numTestProjects;
 
             for (var i = 0; i < numTestProjects; i++)
@@ -59,7 +65,7 @@ namespace ProjectBoardLEDTestConsole
 
         private static void MaybeChangeBuildStatus(IList<MappedProject> mappedProjects)
         {
-            if (random.Next(100000) <= 1)
+            if (random.Next(1000000) <= 1)
             {
                 var randomIndex = random.Next(mappedProjects.Count());
                 mappedProjects[randomIndex].Project.Status = RandomStatus();
@@ -70,6 +76,19 @@ namespace ProjectBoardLEDTestConsole
         {
             var values = Enum.GetValues(typeof(ProjectStatus));
             return (ProjectStatus)values.GetValue(random.Next(values.Length));
+        }
+
+        private static void IncrementBuildStatus(IList<MappedProject> mappedProjects)
+        {
+            foreach (var mappedProject in mappedProjects)
+            {
+                mappedProject.Project.Status = NextStatus(mappedProject.Project.Status);
+            }
+        }
+
+        private static ProjectStatus NextStatus(ProjectStatus currentStatus)
+        {
+            return (ProjectStatus) ((((int) currentStatus) + 1) % Enum.GetValues(typeof (ProjectStatus)).Length);
         }
     }
 }
