@@ -40,7 +40,8 @@ namespace ProjectBoardLEDs
                     AnimatePulsingRegion(mappedProject.Location, 255, 0, 0, 0.8, 0.2, 0.5);
                     break;
                 case ProjectStatus.InProgress:
-                    AnimateMovingGradient(mappedProject.Location, 0, 0, 128, 1.0, 0.2, 1.0);
+                    AnimateMovingGradient(mappedProject.Location, 0, 0, 172, 1.0, 0.4, 0.33, 0.85);
+                    //AnimateSineWave(mappedProject.Location, 0, 0, 172, 1.0, 0.5, 2, 0.5);
                     break;
             }
         }
@@ -66,17 +67,33 @@ namespace ProjectBoardLEDs
             }
         }
 
-        private void AnimateMovingGradient(BoardLocation location, byte r, byte g, byte b, double high, double low, double frequency)
+        private void AnimateMovingGradient(BoardLocation location, byte r, byte g, byte b, double high, double low, double frequency, double rampLength = 1.0)
         {
-            var regionLength = location.LastLED - location.FirstLED;
+            var regionLength = location.LastLED - location.FirstLED + 1;
             double movingOffset = (Environment.TickCount / 1000.0 * frequency) % 1.0;
 
             for (var i = location.FirstLED; i <= location.LastLED; i++)
             {
                 var normalisedPosition = 1.0 * (i - location.FirstLED) / regionLength;
-                var brightness = ((normalisedPosition - movingOffset + 1.0) % 1.0) * (high - low) + low;
+                var movingPosition = ((normalisedPosition - movingOffset + 1.0) % 1.0);
+                var brightness = (movingPosition <= rampLength) ? (movingPosition / rampLength) * (high - low) + low : (1.0 - movingPosition) / (1.0 - rampLength) * (high - low) + low;
                 SetPixel(location.StripNumber, i, Convert.ToByte(brightness * r), Convert.ToByte(brightness * g), Convert.ToByte(brightness * b));
             }
+        }
+
+        private void AnimateSineWave(BoardLocation location, byte r, byte g, byte b, double high, double low,
+            double periods, double frequency)
+        {
+            var regionLength = location.LastLED - location.FirstLED + 1;
+            double movingOffset = (Environment.TickCount / 1000.0 * frequency) % 1.0;
+            for (var i = location.FirstLED; i <= location.LastLED; i++)
+            {
+                var normalisedPosition = 1.0 * (i - location.FirstLED) / regionLength;
+                var movingPosition = ((normalisedPosition - movingOffset + 1.0) % 1.0);
+                var brightness = 0.5 * (Math.Sin(movingPosition * periods * 2.0 * Math.PI) + 1.0) * (high - low) + low;
+                SetPixel(location.StripNumber, i, Convert.ToByte(brightness * r), Convert.ToByte(brightness * g), Convert.ToByte(brightness * b));
+            }
+
         }
 
         private void SetPixel(int stripNumber, int i, byte r, byte g, byte b)
