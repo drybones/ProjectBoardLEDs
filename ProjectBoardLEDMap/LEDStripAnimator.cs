@@ -30,18 +30,17 @@ namespace ProjectBoardLEDs
                 case ProjectStatus.Pass:
                     AnimateStaticRegion(mappedProject.Location, 0, 128, 0);
                     break;
-                case ProjectStatus.Slow:
-                    AnimateStaticRegion(mappedProject.Location, 128, 100, 0);
-                    break;
                 case ProjectStatus.Fail:
                     AnimateStaticRegion(mappedProject.Location, 128, 0, 0);
                     break;
+                case ProjectStatus.Slow:
+                    AnimateSineWave(mappedProject.Location, 172, 150, 0, 1.0, 0.5, 2, 0.25);
+                    break;
                 case ProjectStatus.RedAlert:
-                    AnimatePulsingRegion(mappedProject.Location, 255, 0, 0, 0.8, 0.2, 0.5);
+                    AnimatePulsingRegion(mappedProject.Location, 255, 0, 0, 0.8, 0.4, 0.5);
                     break;
                 case ProjectStatus.InProgress:
                     AnimateMovingGradient(mappedProject.Location, 0, 0, 172, 1.0, 0.4, 0.33, 0.85);
-                    //AnimateSineWave(mappedProject.Location, 0, 0, 172, 1.0, 0.5, 2, 0.5);
                     break;
             }
         }
